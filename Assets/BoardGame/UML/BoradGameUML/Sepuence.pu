@@ -1,0 +1,20 @@
+@startuml
+
+participant Player1
+participant "Server" as Server
+participant Player2
+
+Player1 -> Player1: ダイスを振る
+Player1 -> Server: ダイスの数値を送信
+Server -> Player1: 受信した数値を全てのクライアントに送信
+Server -> Player2: 受信した数値を全てのクライアントに送信
+Player2 -> Player2: ダイスを振る
+Player2 -> Server: ダイスの数値を送信
+
+Server -> Player1: 受信した数値を全てのクライアントに送信
+Server -> Player2: 受信した数値を全てのクライアントに送信
+
+Player1 -> Player1: 人数分のダイス数値が揃えば行動順にソート
+Player2 -> Player2: 人数分のダイス数値が揃えば行動順にソート
+
+@enduml

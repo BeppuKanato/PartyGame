@@ -1,0 +1,329 @@
+@startuml
+
+namespace Common {
+    class InputSystemManager {
+        +playerInput: PlayerInput
+        +AddCallBack(mapName: string, actionName: string, callBack: System.Action<InputAction.CallbackContext>): void
+        +RemoveCallBack(mapName: string, actionName: string, callBack: System.Action<InputAction.CallbackContext>): void
+        +EnableActionMap(mapName: string): void
+        +DisableActionMap(mapName: string): void}
+    }
+    class IntQueManager {
+        -que: List<int>
+        +Push(n: int): void
+        +Pop(): int
+        +GetLastValue(): int
+        +ResetQue(): void
+        +GetQueContent(): List<int>
+        +SetQue(list: List<int>): void
+        +GetQueCount(): int
+    }
+
+    class IntStackManager {
+        -ERROR_NUMBER: int
+        -stack: List<int>
+        +Push(n: int): void
+        +Pop(): int
+        +GetLastValue(): int
+        +ResetStack(): void
+        +GetStackContent(): List<int>
+        +GetStackCount(): int
+    }
+
+    class PhotonNetWorkManager {
+        -RECEIVE_RPC_NAME: string
+        -instance: PhotonNetWorkManager
+        +roomInfos: List<RoomInfo>
+        +nClientInRoom: int
+        +joinedInLoby: bool
+        +currentRoom: Room
+        +actorNumber: int
+        +GetInstance(): PhotonNetWorkManager
+        +ConnectToServer(nickName: string): void
+        +JoinRoom(roomName: string): void
+        +CreateNewRoom(roomName: string): void
+        +InstantiatePrefab(name: string, pos: Vector3, angle: Quaternion): GameObject
+        +SetRoomInfos(): void
+        +SendData(view: PhotonView, jsonData: string, rpcTarget: RpcTarget): void
+        +OnConnectedToMaster(): void
+        +OnJoinedLobby(): void
+        +OnPlayerEnteredRoom(newPlayer: Player): void
+        +OnJoinedRoom(): void
+        +OnJoinRoomFailed(returnCode: short, message: string): void
+        +OnCreatedRoom(): void
+        +OnRoomListUpdate(roomList: List<RoomInfo>): void
+    }
+
+    class StateMachine {
+        +intStack: Common.IntStackManager
+        +StateMachine()
+        +ChangeState(current: StateProcess, next: StateProcess): bool
+        +ExeProcess(stateProcess: StateProcess): int
+    }
+
+    namespace Interface {
+        interface StateProcess {
+            +Enter(): void
+            +Process(): int
+            +Exit(): void
+            +DecideNextState(): int
+            +SetInputProcess(mapName: string, inputSystem: InputSystemManager): void
+        }
+    }
+}
+
+class GameManager {
+    - checkState: List<BoardGameState>
+    - networkHandler: NetworkHandler
+    - isDebugMode: bool
+    - charManager: CharManager
+    - actionOrder: ActionOrderManager
+    - inputSystem: InputSystemManager
+    - userParams: UserParams
+    - stateProcessManager: StateProcessManager
+    + Awake()
+    + Start()
+    + Update()
+    + DebugModeProcess()
+    + ConnectedToServer()
+    + IEnumerator CreateRoom()
+}
+
+class UserParams {
+    -instance: UserParams
+    +nickName: string
+    +charPrefabName: string
+    +isOnline: bool
+    +nPlayer: int
+    -UserParams()
+    +GetInstance(): UserParams
+    +SetNickName(nickName: string): void
+    +SetCharPrefabName(name: string): void
+    +SetIsOnline(trigger: bool): void
+    +SetNPlayer(n: int): void
+}
+
+class NetworkHandler {
+    +photonNetWorkManager: PhotonNetWorkManager
+    +view: PhotonView
+    +receiveData: List<SendData>
+    +Awake(): void
+    +ReceiveRPC(data: byte[]): void
+    +SendData(contentJson: string, rpcTarget: RpcTarget = RpcTarget.All): void
+    +CheckDataComplete(): bool
+}
+class CharManager {
+     +initializeTransforms: List<Transform>
+    +initializeSquare: BaseSquareComponent
+    +field: Transform
+    +setting: BoardGameSetting
+    +charPrefabs: List<GameObject>
+    +networkHandler: NetworkHandler
+    +charClones: Dictionary<int, BaseChar>
+    +InstantiateCharInOnline(prefabName: string): GameObject
+    +InstantiateCharInOffline(prefabName: string): GameObject
+    +InitializeProcess(charObj: GameObject, actorNumber: int): void
+    +ExeCharMove(actorNumber: int, branchIndex: int): bool
+    +GetPrefabByName(name: string): GameObject
+    +CheckLinqResult(linq: IEnumerable<GameObject>): bool
+}
+class BaseChar {
+    +animator: Animator
+    +nCoin: int
+    +nStar: int
+    +local: bool
+    +nowSquare: BaseSquareComponent
+    -prevPos: Vector3
+    +InitializeChar(parent: Transform, nowSquare: BaseSquareComponent): void
+    +MoveToSquare(branchIndex: int, moveSpeed: float): bool
+    +ReachTargetProcess(branchIndex: int): void
+    +RotateUpdate(): void
+    +PositionUpDate(targetSquare: GameObject, moveSpeed: float): void
+    +OnFootstep(): void
+}
+class ActionOrderManager {
+    +que: IntQueManager
+    -actedQue: IntQueManager
+    +GetActorID(): int
+    +RotateActorOrder(): void
+    +CheckAllActed(): bool
+    +SetQue(que: List<int>): void
+    -ResetOrderQue(): void
+}
+
+class StateProcessManager {
+        +PREV_RETURN_NUMBER: int
+    +gameManager: BoardGame.GameManager
+    +stateMachine: StateMachine
+    +stateTrasitionManager: StateTrasitionManager
+    +currentState: BoardGameState
+    +stateProcess: Dictionary<BoardGameState, StateProcess>
+    +StateProcessManager(networkHandler: NetworkHandler, charManager: CharManager, actionOrder: ActionOrderManager, inputSystem: InputSystemManager)
+    +SetProcess(networkHandler: NetworkHandler, charManager: CharManager, actionOrder: ActionOrderManager, inputSystem: InputSystemManager): void
+    +InitializeStateProcesses(networkHandler: NetworkHandler, charManager: CharManager, actionOrder: ActionOrderManager): void
+    +SetInputProcess(inputSystem: InputSystemManager): void
+    +RunCurrentStateProcess(inputSystem: InputSystemManager): void
+    +SetActionMapEnable(currentState: BoardGameState, nextState: BoardGameState, inputSystem: InputSystemManager): void
+}
+class StateTrasitionManager {
+    +stateMachine: StateMachine
+    +stateProcessManager: StateProcessManager
+    +StateTrasitionManager(processManager: StateProcessManager, stateMachine: StateMachine)
+    +StateTransition(processResult: int, currentState: BoardGameState): BoardGameState
+    +PushToStateHistory(transitioned: bool, processResult: int): void
+}
+
+class SendData {
+    +actorNumber: int
+    +content: string
+    +SendData(actorNumber: int, content: string)
+}
+
+class BaseSquareComponent {
+    +preSquare: List<BaseSquareComponent>
+    +nextSquare: List<BaseSquareComponent>
+    +ThroughProcess(): void
+    +OnProcess(): void
+    +GetIsBranch(): bool
+}
+
+class BlueSquareComponent {
+    +nCoin: int
+    +OnProcess(): void
+}
+
+class RedSquareComponent {
+    +nCoin: int
+    +OnProcess(): void
+}
+
+class DecideOrderStateProcess {
+    -networkHandler: NetworkHandler
+    -stateProcessManager: StateProcessManager
+    -actionOrder: ActionOrderManager
+    +DecideOrderStateProcess(stateProcessManager: StateProcessManager, networkHandler: NetworkHandler, actionOrder: ActionOrderManager)
+    +Enter(): void
+    +Process(): int
+    +Exit(): void
+    +SetInputProcess(mapName: string, inputSystem: InputSystemManager): void
+    +DecideNextState(): int
+    -SetActionOrderQue(dataList: Dictionary<int, DiceStateProcess.SendDataStruct>): void
+}
+
+class DiceStateProcess {
+    -stateProcessManager: StateProcessManager
+    -networkHandler: NetworkHandler
+    -canPrev: bool
+    -selectSubmit: bool
+    -selectCancel: bool
+    +DiceStateProcess(stateProcessManager: StateProcessManager, networkHandler: NetworkHandler, canPrev: bool)
+    +Enter(): void
+    +Process(): int
+    +Exit(): void
+    +SetInputProcess(mapName: string, inputSystem: InputSystemManager): void
+    +DecideNextState(): int
+    -DiceRoll(context: InputAction.CallbackContext): void
+    -CancelProcess(context: InputAction.CallbackContext): void
+    +SendDataStruct
+}
+
+class MoveStateProcess {
+    -charManager: CharManager
+    -networkHandler: NetworkHandler
+    -actorNumber: int
+    -selectBranchIndex: int
+    -reachTarget: bool
+    -moveCount: int
+    -decideBranch: bool
+    +MoveStateProcess(charManager: CharManager, actorNumber: int, networkHandler: NetworkHandler)
+    +Enter(): void
+    +Process(): int
+    +Exit(): void
+    +DecideNextState(): int
+    +SetInputProcess(mapName: string, inputSystem: InputSystemManager): void
+    -SelectBranch(nBranch: int): bool
+    -ReachTargetProcess(): void
+}
+
+class PreparationStateProcess {
+    -charManager: CharManager
+    -userParams: UserParams
+    -actorNumber: int
+    +PreparationStateProcess(charManager: CharManager, actorNumber: int)
+    +Enter(): void
+    +Process(): int
+    +Exit(): void
+    +DecideNextState(): int
+    +SetInputProcess(mapName: string, inputSystem: InputSystemManager): void
+}
+
+class SelectActStateProcess {
+    -gameManager: GameManager
+    -stateProcessManager: StateProcessManager
+    +SelectActStateProcess(stateProcessManager: StateProcessManager)
+    +Enter(): void
+    +Process(): int
+    +Exit(): void
+    +DecideNextState(): int
+    +SetInputProcess(mapName: string, inputSystem: InputSystemManager): void
+    +SelectDice(context: InputAction.CallbackContext): void
+    +SelectCancel(context: InputAction.CallbackContext): void
+}
+
+
+enum BoardGameState {
+    Preparation
+    OrderDice
+    DecideOrder
+    SelectAct
+    MoveDice
+    Move
+}
+
+GameManager ..> NetworkHandler : uses 
+GameManager ..> CharManager : uses 
+GameManager ..> ActionOrderManager : uses 
+GameManager ..> InputSystemManager : uses 
+GameManager ..> StateProcessManager : uses 
+GameManager ..> UserParams : uses 
+
+CharManager --> BaseChar : has a
+
+StateProcessManager ..> StateTrasitionManager : uses
+StateProcessManager ..> StateMachine : uses
+
+StateTrasitionManager ..> StateMachine : uses
+
+NetworkHandler ..> PhotonNetWorkManager : uses
+
+BaseChar ..> BaseSquareComponent: uses
+
+ActionOrderManager --> IntQueManager : has a
+
+BaseSquareComponent <|-- BlueSquareComponent : extends
+BaseSquareComponent <|-- RedSquareComponent : extends
+
+Common.Interface.StateProcess <|-- DecideOrderStateProcess : implements
+Common.Interface.StateProcess <|-- DiceStateProcess : implements
+Common.Interface.StateProcess <|-- MoveStateProcess : implements
+Common.Interface.StateProcess <|-- PreparationStateProcess : implements
+Common.Interface.StateProcess <|-- SelectActStateProcess : implements
+
+DecideOrderStateProcess ..> Common.InputSystemManager : uses
+
+DiceStateProcess ..> Common.InputSystemManager : uses
+DiceStateProcess ..> NetworkHandler : uses
+
+SelectActStateProcess ..> Common.InputSystemManager : uses
+SelectActStateProcess ..> NetworkHandler : uses
+
+MoveStateProcess ..> Common.InputSystemManager : uses
+MoveStateProcess ..> NetworkHandler : uses
+
+SelectActStateProcess ..> InputSystemManager : uses
+SelectActStateProcess ..> IntQueManager : uses
+SelectActStateProcess ..> IntStackManager : uses
+
+NetworkHandler ..> SendData : uses
+
+@enduml
