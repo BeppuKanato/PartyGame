@@ -27,7 +27,7 @@ public class StateProcessManager
     {
         InitializeStateProcesses(networkHandler, charManager, actionOrder);
 
-        SetInputProcess(inputSystem);
+        //SetInputProcess(inputSystem);
     }
     //ó‘Ô–ˆ‚Ìˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»
     void InitializeStateProcesses(NetworkHandler networkHandler, CharManager charManager, ActionOrderManager actionOrder)

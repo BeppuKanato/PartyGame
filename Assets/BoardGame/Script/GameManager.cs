@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using Photon.Pun;
 using Common;
+using UnityEngine.InputSystem;
 
 //ボードゲーム空間のGameManager
 namespace BoardGame

@@ -22,11 +22,19 @@ namespace Common
                 playerInput.GetComponent<PlayerInput>();
                 Debug.LogError("playerInputが設定されていません");
             }
-
             Debug.Log($"PlayerInput = {playerInput}");
-        }
 
-        //指定アクションにコールバックを追加
+            InputSystem.onDeviceChange += OnDeviceChange;
+        }
+        private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+        {
+            // デバイスが接続された場合
+            if (change == InputDeviceChange.Added)
+            {
+                Debug.Log($"新規コントローラが接続されました");
+            }
+        }
+                //指定アクションにコールバックを追加
         public void AddCallBack(string mapName, string actionName, System.Action<InputAction.CallbackContext> callBack)
         {
             InputActionMap actionMap = playerInput.actions.FindActionMap(mapName);
