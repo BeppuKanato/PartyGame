@@ -6,14 +6,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PreparationStateProcess : Common.Interface.StateProcess
+public abstract class BasePreparationStateProcess : Common.Interface.StateProcess
 {
 
-    CharManager charManager;
-    UserParams userParams;
-    int actorNumber;    //ƒ‹[ƒ€“à‚ÅˆêˆÓ‚ÌID
+    protected CharManager charManager;
+    protected UserParams userParams;
+    protected int actorNumber;    //ƒ‹[ƒ€“à‚ÅˆêˆÓ‚ÌID
 
-    public PreparationStateProcess(CharManager charManager, int actorNumber)
+    public BasePreparationStateProcess(CharManager charManager, int actorNumber)
     {
         Debug.Log("Preparion");
         userParams = UserParams.GetInstance();
@@ -22,12 +22,12 @@ public class PreparationStateProcess : Common.Interface.StateProcess
 
     }
 
-    public void Enter()
+    public virtual void Enter()
     {
         Debug.Log("Preparationó‘Ô‚É“ü‚è‚Ü‚µ‚½");
     }
 
-    public int Process()
+    public virtual int Process()
     {
         GameObject cloneObj;
         int key;
@@ -47,7 +47,7 @@ public class PreparationStateProcess : Common.Interface.StateProcess
         return DecideNextState();
     }
 
-    public void Exit()
+    public virtual void Exit()
     {
         Debug.Log("Preparationó‘Ô‚ğI—¹‚µ‚Ü‚·");
     }

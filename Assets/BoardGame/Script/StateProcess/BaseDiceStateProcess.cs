@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Switch;
 
-public class DiceStateProcess : Common.Interface.StateProcess
+public abstract class BaseDiceStateProcess : Common.Interface.StateProcess
 {
-    StateProcessManager stateProcessManager;
+    protected StateProcessManager stateProcessManager;
     NetworkHandler networkHandler;
 
-    bool canPrev;       //前の状態に戻れるか
-    bool selectSubmit;  //サイコロを振ったか
-    bool selectCancel;  //キャンセルを選択したか
+    protected bool canPrev;       //前の状態に戻れるか
+    protected bool selectSubmit;  //サイコロを振ったか
+    protected bool selectCancel;  //キャンセルを選択したか
     [Serializable]
     public struct SendDataStruct
     {
@@ -24,13 +24,13 @@ public class DiceStateProcess : Common.Interface.StateProcess
         public int random;      //ダイスの目
     }
 
-    public DiceStateProcess(StateProcessManager stateProcessManager, NetworkHandler networkHandler, bool canPrev)
+    public BaseDiceStateProcess(StateProcessManager stateProcessManager, NetworkHandler networkHandler, bool canPrev)
     {
         this.stateProcessManager = stateProcessManager;
         this.canPrev = canPrev;
         this.networkHandler = networkHandler;
     }
-    public void Enter()
+    public virtual void Enter()
     {
         Debug.Log($"Dice状態になった際の処理");
         selectSubmit = false;
@@ -39,7 +39,7 @@ public class DiceStateProcess : Common.Interface.StateProcess
 
     }
 
-    public int Process()
+    public virtual int Process()
     {
         int nextState = (int)stateProcessManager.currentState;
         if (selectSubmit)
@@ -76,15 +76,15 @@ public class DiceStateProcess : Common.Interface.StateProcess
         return nextState;
     }
 
-    public void Exit()
+    public virtual void Exit()
     {
         Debug.Log($"Dice状態を出る際の処理");
     }
 
     public void SetInputProcess(string mapName, Common.InputSystemManager inputSystem)
     {
-        inputSystem.AddCallBack(mapName, "Submit", DiceRoll);
-        inputSystem.AddCallBack(mapName, "Cancel", CancelProcess);
+        inputSystem.AddCallBackToAllPlayerInput(mapName, "Submit", DiceRoll);
+        inputSystem.AddCallBackToAllPlayerInput(mapName, "Cancel", CancelProcess);
     }
 
     public int DecideNextState()

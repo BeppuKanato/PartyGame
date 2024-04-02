@@ -5,13 +5,13 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine.InputSystem;
 
-public class DecideOrderStateProcess : Common.Interface.StateProcess
+public abstract class BaseDecideOrderStateProcess : Common.Interface.StateProcess
 {
     NetworkHandler networkHandler;
-    StateProcessManager stateProcessManager;
-    ActionOrderManager actionOrder;
+    protected StateProcessManager stateProcessManager;
+    protected ActionOrderManager actionOrder;
 
-    public DecideOrderStateProcess(StateProcessManager stateProcessManager, NetworkHandler networkHandler, ActionOrderManager actionOrder)
+    public BaseDecideOrderStateProcess(StateProcessManager stateProcessManager, NetworkHandler networkHandler, ActionOrderManager actionOrder)
     {
         this.networkHandler = networkHandler;
         this.stateProcessManager = stateProcessManager;
@@ -19,12 +19,12 @@ public class DecideOrderStateProcess : Common.Interface.StateProcess
 
     } 
 
-    public void Enter()
+    public virtual void Enter()
     {
         Debug.Log("DecideOrderProcess状態に入りました");
     }
 
-    public int Process()
+    public virtual int Process()
     {
         int nextState = (int)stateProcessManager.currentState;
 
@@ -33,11 +33,11 @@ public class DecideOrderStateProcess : Common.Interface.StateProcess
         //クライアント分データを受信したら
         if (isComplete) 
         {
-            Dictionary<int, DiceStateProcess.SendDataStruct> dataList = new Dictionary<int, DiceStateProcess.SendDataStruct>();
+            Dictionary<int, BaseDiceStateProcess.SendDataStruct> dataList = new Dictionary<int, BaseDiceStateProcess.SendDataStruct>();
             //jsonデータを構造体データに変換
             foreach (SendData data in networkHandler.receiveData)
             {
-                dataList[data.actorNumber] = JsonUtility.FromJson<DiceStateProcess.SendDataStruct>(data.content);
+                dataList[data.actorNumber] = JsonUtility.FromJson<BaseDiceStateProcess.SendDataStruct>(data.content);
             }
 
             SetActionOrderQue(dataList);
@@ -53,7 +53,7 @@ public class DecideOrderStateProcess : Common.Interface.StateProcess
         return nextState;
     }
 
-    public void Exit()
+    public virtual void Exit()
     {
         Debug.Log("DecideOrder状態を終了します");
         //受信データをリセット
@@ -69,7 +69,7 @@ public class DecideOrderStateProcess : Common.Interface.StateProcess
         return (int)BoardGameState.SelectAct;
     }
     //行動順キューを設定
-    void SetActionOrderQue(Dictionary<int, DiceStateProcess.SendDataStruct> dataList)
+    protected void SetActionOrderQue(Dictionary<int, BaseDiceStateProcess.SendDataStruct> dataList)
     {
         //ダイスの数値でソートしたIDリストを作成
         IEnumerable<int> list = from data in dataList

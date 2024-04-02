@@ -7,32 +7,32 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 
-public class MoveStateProcess : Common.Interface.StateProcess
+public abstract class BaseMoveStateProcess : Common.Interface.StateProcess
 {
-    CharManager charManager;
+    protected CharManager charManager;
     NetworkHandler networkHandler;
-    int actorNumber;                //ルーム内で一意のID
-    int selectBranchIndex = 0;
+    protected int actorNumber;                //ルーム内で一意のID
+    protected int selectBranchIndex = 0;
 
-    bool reachTarget;
-    int moveCount;                  //移動量
-    bool decideBranch;              //分岐を選択したかのトリガー
-    int nNowSquareBranch;           //現在のマスの分岐数
-    bool spuareHasBranch;           //分岐を持つマスか
-    public MoveStateProcess(CharManager charManager, int actorNumber, NetworkHandler networkHandler)
+    protected bool reachTarget;
+    protected int moveCount;                  //移動量
+    protected bool decideBranch;              //分岐を選択したかのトリガー
+    protected int nNowSquareBranch;           //現在のマスの分岐数
+    protected bool spuareHasBranch;           //分岐を持つマスか
+    public BaseMoveStateProcess(CharManager charManager, int actorNumber, NetworkHandler networkHandler)
     {
         this.charManager = charManager;
         this.actorNumber = actorNumber;
         this.networkHandler = networkHandler;
     }
-    public void Enter()
+    public virtual void Enter()
     {
         Debug.Log($"Move状態に入りました");
         selectBranchIndex = 0;
         reachTarget = false;
 
         //受け取ったダイスの値を取得
-        DiceStateProcess.SendDataStruct dicaData = JsonUtility.FromJson<DiceStateProcess.SendDataStruct>(networkHandler.receiveData.Last().content);
+        BaseDiceStateProcess.SendDataStruct dicaData = JsonUtility.FromJson<BaseDiceStateProcess.SendDataStruct>(networkHandler.receiveData.Last().content);
         moveCount = dicaData.random;
         decideBranch = false;
 
@@ -40,7 +40,7 @@ public class MoveStateProcess : Common.Interface.StateProcess
         spuareHasBranch = false;
     }
 
-    public int Process()
+    public virtual int Process()
     {
         BaseSquareComponent nowSqusre = charManager.charClones[actorNumber].nowSquare;
         nNowSquareBranch = nowSqusre.nextSquare.Count;
@@ -64,7 +64,7 @@ public class MoveStateProcess : Common.Interface.StateProcess
         return nextState;
     }
 
-    public void Exit()
+    public virtual void Exit()
     {
         Debug.Log($"Move状態を終了します");
         //受信データをリセット
@@ -86,9 +86,9 @@ public class MoveStateProcess : Common.Interface.StateProcess
 
     public void SetInputProcess(string mapName, Common.InputSystemManager inputSystem)
     {
-        inputSystem.AddCallBack(mapName, "SelectPrev", SelectPrev);
-        inputSystem.AddCallBack(mapName, "SelectNext", SelectNext);
-        inputSystem.AddCallBack(mapName, "Submit", DecideBranchIndex);
+        inputSystem.AddCallBackToAllPlayerInput(mapName, "SelectPrev", SelectPrev);
+        inputSystem.AddCallBackToAllPlayerInput(mapName, "SelectNext", SelectNext);
+        inputSystem.AddCallBackToAllPlayerInput(mapName, "Submit", DecideBranchIndex);
     }
 
     //選択を一個前にする
@@ -122,7 +122,7 @@ public class MoveStateProcess : Common.Interface.StateProcess
     }
 
     //一マス進んだ時の処理
-    void ReachTargetProcess()
+    protected void ReachTargetProcess()
     {
         moveCount--;
         Debug.Log($"残りの移動マス数 = {moveCount}");
