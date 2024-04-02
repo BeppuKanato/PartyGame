@@ -32,12 +32,12 @@ public class StateProcessManager
     //状態毎の処理クラスの初期化
     void InitializeStateProcesses(NetworkHandler networkHandler, CharManager charManager, ActionOrderManager actionOrder)
     {
-        stateProcess.Add(BoardGameState.Preparation, new PreparationStateProcess(charManager, networkHandler.photonNetWorkManager.actorNumber));
-        stateProcess.Add(BoardGameState.OrderDice, new DiceStateProcess(this, networkHandler, false));
-        stateProcess.Add(BoardGameState.DecideOrder, new DecideOrderStateProcess(this, networkHandler, actionOrder));
-        stateProcess.Add(BoardGameState.SelectAct, new SelectActStateProcess(this));
-        stateProcess.Add(BoardGameState.MoveDice, new DiceStateProcess(this, networkHandler, true));
-        stateProcess.Add(BoardGameState.Move, new MoveStateProcess(charManager, networkHandler.photonNetWorkManager.actorNumber, networkHandler));
+        stateProcess.Add(BoardGameState.Preparation, new OnlinePreparationStateProcess(charManager, networkHandler.photonNetWorkManager.actorNumber));
+        stateProcess.Add(BoardGameState.OrderDice, new OnlineDiceStateProcess(this, networkHandler, false));
+        stateProcess.Add(BoardGameState.DecideOrder, new OnlineDecideOrderStateProcess(this, networkHandler, actionOrder));
+        stateProcess.Add(BoardGameState.SelectAct, new OnlineSelectActStateProcess(this));
+        stateProcess.Add(BoardGameState.MoveDice, new OnlineDiceStateProcess(this, networkHandler, true));
+        stateProcess.Add(BoardGameState.Move, new OnlineMoveStateProcess(charManager, networkHandler.photonNetWorkManager.actorNumber, networkHandler));
     }
     //全ての状態での入力処理を設定する
     void SetInputProcess(Common.InputSystemManager inputSystem)
@@ -60,7 +60,7 @@ public class StateProcessManager
     //現在の状態のActionMapをDisableに、次の状態のActionMapをEnableにする
     void SetActionMapEnable(BoardGameState currentState, BoardGameState nextState, Common.InputSystemManager inputSystem)
     {
-        inputSystem.DisableActionMap($"{currentState}State");
-        inputSystem.EnableActionMap($"{nextState}State");
+        inputSystem.DisableActionMap($"{currentState}State", 1);
+        inputSystem.EnableActionMap($"{nextState}State", 1);
     }
 }

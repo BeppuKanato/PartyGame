@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using Photon.Pun;
 using Common;
+using UnityEngine.InputSystem;
 
 //ボードゲーム空間のGameManager
 namespace BoardGame
@@ -46,13 +47,9 @@ namespace BoardGame
         void Update()
         {
             stateProcessManager.RunCurrentStateProcess(inputSystem);
-            if (Input.GetKeyDown(KeyCode.H))
+            if (Input.GetKeyDown(KeyCode.P))
             {
-                checkState.Clear();
-                foreach (int n in stateProcessManager.stateMachine.intStack.GetStackContent())
-                {
-                    checkState.Add((BoardGameState)n);
-                }
+                Debug.Log($"{inputSystem.playerInput[0].user}");
             }
         }
         //-------------------------------------------デバッグモードでの追加メソッド-------------------------------------------------------------------
