@@ -8,8 +8,7 @@ using UnityEngine.InputSystem.Switch;
 
 public abstract class BaseDiceStateProcess : Common.Interface.StateProcess
 {
-    protected StateProcessManager stateProcessManager;
-    NetworkHandler networkHandler;
+    protected BaseStateProcessManager stateProcessManager;
 
     protected bool canPrev;       //前の状態に戻れるか
     protected bool selectSubmit;  //サイコロを振ったか
@@ -24,11 +23,10 @@ public abstract class BaseDiceStateProcess : Common.Interface.StateProcess
         public int random;      //ダイスの目
     }
 
-    public BaseDiceStateProcess(StateProcessManager stateProcessManager, NetworkHandler networkHandler, bool canPrev)
+    public BaseDiceStateProcess(BaseStateProcessManager stateProcessManager, bool canPrev)
     {
         this.stateProcessManager = stateProcessManager;
         this.canPrev = canPrev;
-        this.networkHandler = networkHandler;
     }
     public virtual void Enter()
     {
@@ -118,7 +116,7 @@ public abstract class BaseDiceStateProcess : Common.Interface.StateProcess
         SendDataStruct data = new SendDataStruct(random);
         string jsonData = JsonUtility.ToJson(data);
 
-        networkHandler.SendData(jsonData);
+        //networkHandler.SendData(jsonData);
 
         selectSubmit = true;
     }

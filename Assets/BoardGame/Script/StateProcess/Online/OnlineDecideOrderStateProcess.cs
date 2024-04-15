@@ -5,7 +5,7 @@ using UnityEngine;
 public class OnlineDecideOrderStateProcess : BaseDecideOrderStateProcess
 {
     NetworkHandler networkHandler;
-    public OnlineDecideOrderStateProcess(StateProcessManager stateProcess, NetworkHandler networkHandler, ActionOrderManager actionOrder):base(stateProcess, networkHandler, actionOrder)
+    public OnlineDecideOrderStateProcess(BaseStateProcessManager stateProcess, NetworkHandler networkHandler, ActionOrderManager actionOrder):base(stateProcess, actionOrder)
     {
         this.networkHandler = networkHandler;
     }

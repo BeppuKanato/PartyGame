@@ -7,13 +7,11 @@ using UnityEngine.InputSystem;
 
 public abstract class BaseDecideOrderStateProcess : Common.Interface.StateProcess
 {
-    NetworkHandler networkHandler;
-    protected StateProcessManager stateProcessManager;
+    protected BaseStateProcessManager stateProcessManager;
     protected ActionOrderManager actionOrder;
 
-    public BaseDecideOrderStateProcess(StateProcessManager stateProcessManager, NetworkHandler networkHandler, ActionOrderManager actionOrder)
+    public BaseDecideOrderStateProcess(BaseStateProcessManager stateProcessManager, ActionOrderManager actionOrder)
     {
-        this.networkHandler = networkHandler;
         this.stateProcessManager = stateProcessManager;
         this.actionOrder = actionOrder;
 
@@ -26,38 +24,39 @@ public abstract class BaseDecideOrderStateProcess : Common.Interface.StateProces
 
     public virtual int Process()
     {
-        int nextState = (int)stateProcessManager.currentState;
+        //int nextState = (int)stateProcessManager.currentState;
 
-        bool isComplete = networkHandler.CheckDataComplete();
+        //bool isComplete = networkHandler.CheckDataComplete();
 
-        //クライアント分データを受信したら
-        if (isComplete) 
-        {
-            Dictionary<int, BaseDiceStateProcess.SendDataStruct> dataList = new Dictionary<int, BaseDiceStateProcess.SendDataStruct>();
-            //jsonデータを構造体データに変換
-            foreach (SendData data in networkHandler.receiveData)
-            {
-                dataList[data.actorNumber] = JsonUtility.FromJson<BaseDiceStateProcess.SendDataStruct>(data.content);
-            }
+        ////クライアント分データを受信したら
+        //if (isComplete) 
+        //{
+        //    Dictionary<int, BaseDiceStateProcess.SendDataStruct> dataList = new Dictionary<int, BaseDiceStateProcess.SendDataStruct>();
+        //    //jsonデータを構造体データに変換
+        //    foreach (SendData data in networkHandler.receiveData)
+        //    {
+        //        dataList[data.actorNumber] = JsonUtility.FromJson<BaseDiceStateProcess.SendDataStruct>(data.content);
+        //    }
 
-            SetActionOrderQue(dataList);
+        //    SetActionOrderQue(dataList);
 
-            nextState = DecideNextState();
-        }
-        else
-        {
-            Debug.Log($"ルーム人数{networkHandler.photonNetWorkManager.currentRoom.PlayerCount}, 受信データ数{networkHandler.receiveData.Count}");
-            Debug.Log("人数分のデータを受信していません");
-        }
+        //    nextState = DecideNextState();
+        //}
+        //else
+        //{
+        //    Debug.Log($"ルーム人数{networkHandler.photonNetWorkManager.currentRoom.PlayerCount}, 受信データ数{networkHandler.receiveData.Count}");
+        //    Debug.Log("人数分のデータを受信していません");
+        //}
 
-        return nextState;
+        //return nextState;
+
+        return 1;
     }
 
     public virtual void Exit()
     {
         Debug.Log("DecideOrder状態を終了します");
         //受信データをリセット
-        networkHandler.receiveData.Clear();
     }
 
     public void SetInputProcess(string mapName, Common.InputSystemManager inputSystem)

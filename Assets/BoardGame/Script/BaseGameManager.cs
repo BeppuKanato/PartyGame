@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 //ボードゲーム空間のGameManager
 namespace BoardGame
 {
-    public class GameManager : MonoBehaviour
+    public class BaseGameManager : MonoBehaviour
     {
         //状態履歴の確認用
         public List<BoardGameState> checkState = new List<BoardGameState>();
@@ -18,20 +18,20 @@ namespace BoardGame
         public NetworkHandler networkHandler { get; private set; }  
         public bool isDebugMode;                            //デバッグモードで実行するか 
         [field: SerializeField]
-        public CharManager charManager { get; private set; }
+        public BaseCharManager charManager { get; private set; }
         [field: SerializeField]
         public ActionOrderManager actionOrder { get; private set; }
         [field: SerializeField]
         public Common.InputSystemManager inputSystem { get; private set; }
 
         public UserParams userParams { get; private set; }
-        StateProcessManager stateProcessManager;
+        BaseStateProcessManager stateProcessManager;
         
         //IDを行動順に並べたスタック
         private void Awake()
         {
         }
-        void Start()
+        protected void Start()
         {
             //----------------------------------------------------デバッグモードでの追加処理------------------------------------------------------------
             if (isDebugMode)
@@ -40,17 +40,21 @@ namespace BoardGame
                 DebugModeProcess();
             }
             //---------------------------------------------------------ここまで-------------------------------------------------------------------------
-            stateProcessManager = new StateProcessManager(this.networkHandler, this.charManager, this.actionOrder, this.inputSystem);
+            //stateProcessManager = new BaseStateProcessManager(this.networkHandler, this.charManager, this.actionOrder, this.inputSystem);
+
+            Debug.Log("BaseのStart");
         }
 
         // Update is called once per frame
-        void Update()
+        protected void Update()
         {
             stateProcessManager.RunCurrentStateProcess(inputSystem);
             if (Input.GetKeyDown(KeyCode.P))
             {
                 Debug.Log($"{inputSystem.playerInput[0].user}");
             }
+
+            Debug.Log("BaseのUpdate");
         }
         //-------------------------------------------デバッグモードでの追加メソッド-------------------------------------------------------------------
         void DebugModeProcess()

@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using Photon.Pun.Demo.SlotRacer.Utils;
 
-public class CharManager : MonoBehaviour
+public class BaseCharManager : MonoBehaviour
 {
     [SerializeField]
     List<Transform> initializeTransforms = new List<Transform>();

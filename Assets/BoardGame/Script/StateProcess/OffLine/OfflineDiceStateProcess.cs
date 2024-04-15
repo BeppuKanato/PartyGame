@@ -2,12 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OnlineDiceStateProcess : BaseDiceStateProcess
+public class OfflineDiceStateProcess : BaseDiceStateProcess
 {
-    NetworkHandler networkHandler;
-    public OnlineDiceStateProcess(BaseStateProcessManager stateProcessManager, NetworkHandler networkHandler, bool canPrev) : base(stateProcessManager, canPrev)
+    public OfflineDiceStateProcess(OfflineStateProcessManager stateProcessManager, bool canPrev) : base(stateProcessManager, canPrev)
     {
-        this.networkHandler = networkHandler;
     }
 
     public override void Enter()
@@ -32,7 +30,7 @@ public class OnlineDiceStateProcess : BaseDiceStateProcess
         return nextState;
     }
 
-    public override void Exit() 
+    public override void Exit()
     {
         base.Exit();
     }

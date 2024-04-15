@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OnlineSelectActStateProcess : BaseSelectActStateProcess
+public class OfflineSelectActStateProcess : BaseSelectActStateProcess
 {
-    public OnlineSelectActStateProcess(BaseStateProcessManager stateProcessManager) : base(stateProcessManager)
+    public OfflineSelectActStateProcess(OfflineStateProcessManager stateProcessManager) : base(stateProcessManager)
     {
 
     }
@@ -32,7 +32,7 @@ public class OnlineSelectActStateProcess : BaseSelectActStateProcess
         return nextState;
     }
 
-    public override void Exit() 
+    public override void Exit()
     {
         base.Exit();
     }

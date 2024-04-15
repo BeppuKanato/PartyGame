@@ -9,8 +9,7 @@ using UnityEngine.InputSystem.LowLevel;
 
 public abstract class BaseMoveStateProcess : Common.Interface.StateProcess
 {
-    protected CharManager charManager;
-    NetworkHandler networkHandler;
+    protected BaseCharManager charManager;
     protected int actorNumber;                //ルーム内で一意のID
     protected int selectBranchIndex = 0;
 
@@ -19,11 +18,10 @@ public abstract class BaseMoveStateProcess : Common.Interface.StateProcess
     protected bool decideBranch;              //分岐を選択したかのトリガー
     protected int nNowSquareBranch;           //現在のマスの分岐数
     protected bool spuareHasBranch;           //分岐を持つマスか
-    public BaseMoveStateProcess(CharManager charManager, int actorNumber, NetworkHandler networkHandler)
+    public BaseMoveStateProcess(BaseCharManager charManager, int actorNumber)
     {
         this.charManager = charManager;
         this.actorNumber = actorNumber;
-        this.networkHandler = networkHandler;
     }
     public virtual void Enter()
     {
@@ -32,8 +30,8 @@ public abstract class BaseMoveStateProcess : Common.Interface.StateProcess
         reachTarget = false;
 
         //受け取ったダイスの値を取得
-        BaseDiceStateProcess.SendDataStruct dicaData = JsonUtility.FromJson<BaseDiceStateProcess.SendDataStruct>(networkHandler.receiveData.Last().content);
-        moveCount = dicaData.random;
+        //BaseDiceStateProcess.SendDataStruct dicaData = JsonUtility.FromJson<BaseDiceStateProcess.SendDataStruct>(networkHandler.receiveData.Last().content);
+        //moveCount = dicaData.random;
         decideBranch = false;
 
         nNowSquareBranch = 0;
@@ -68,7 +66,7 @@ public abstract class BaseMoveStateProcess : Common.Interface.StateProcess
     {
         Debug.Log($"Move状態を終了します");
         //受信データをリセット
-        networkHandler.receiveData.Clear();
+        //networkHandler.receiveData.Clear();
     }
 
     public int DecideNextState()

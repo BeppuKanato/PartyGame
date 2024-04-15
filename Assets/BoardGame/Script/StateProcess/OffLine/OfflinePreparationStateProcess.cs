@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OnlinePreparationStateProcess : BasePreparationStateProcess
+public class OfflinePreparationStateProcess : BasePreparationStateProcess
 {
-    public OnlinePreparationStateProcess(BaseCharManager charManager, int actorNumber) : base(charManager, actorNumber)
+    public OfflinePreparationStateProcess(OfflineCharManager charManager, int actorNumer) : base(charManager, actorNumer)
     {
 
     }
@@ -13,7 +13,7 @@ public class OnlinePreparationStateProcess : BasePreparationStateProcess
     {
         base.Enter();
 
-        Debug.Log("オンライン時の処理");
+        Debug.Log("オフライン時の処理です");
     }
 
     public override int Process()
@@ -40,6 +40,6 @@ public class OnlinePreparationStateProcess : BasePreparationStateProcess
     {
         base.Exit();
 
-        Debug.Log("オンライン時の処理です");
+        Debug.Log("オフライン時の処理です");
     }
 }

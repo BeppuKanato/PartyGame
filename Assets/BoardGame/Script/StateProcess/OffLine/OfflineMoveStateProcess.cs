@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OnlineMoveStateProcess : BaseMoveStateProcess
+public class OfflineMoveStateProcess : BaseMoveStateProcess
 {
-    public OnlineMoveStateProcess(BaseCharManager charManager, int actorNumber, NetworkHandler networkHandler) : base(charManager, actorNumber)
+    public OfflineMoveStateProcess(OfflineCharManager charManager, int actorNumber) : base(charManager, actorNumber)
     {
 
     }
@@ -40,7 +40,7 @@ public class OnlineMoveStateProcess : BaseMoveStateProcess
         return nextState;
     }
 
-    public override void Exit() 
+    public override void Exit()
     {
         base.Exit();
 

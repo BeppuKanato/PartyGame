@@ -5,42 +5,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateProcessManager
+public abstract class BaseStateProcessManager
 {
     public int PREV_RETURN_NUMBER { get; private set; } = 99;
-    BoardGame.GameManager gameManager;
     public Common.StateMachine stateMachine { get; private set; }
     StateTrasitionManager stateTrasitionManager;
     public BoardGameState currentState { get; private set; }
     public Dictionary<BoardGameState, StateProcess> stateProcess { get; private set;} = new Dictionary<BoardGameState, StateProcess>();
     
-    public StateProcessManager(NetworkHandler networkHandler, CharManager charManager, ActionOrderManager actionOrder, Common.InputSystemManager inputSystem)
+    public BaseStateProcessManager()
     {
         stateMachine = new Common.StateMachine();
         stateTrasitionManager= new StateTrasitionManager(this, stateMachine);
         currentState = BoardGameState.Preparation;
-
-        SetProcess(networkHandler, charManager, actionOrder, inputSystem);
-    }
-    //処理クラスの初期設定
-    void SetProcess(NetworkHandler networkHandler, CharManager charManager, ActionOrderManager actionOrder, Common.InputSystemManager inputSystem)
-    {
-        InitializeStateProcesses(networkHandler, charManager, actionOrder);
-
-        SetInputProcess(inputSystem);
-    }
-    //状態毎の処理クラスの初期化
-    void InitializeStateProcesses(NetworkHandler networkHandler, CharManager charManager, ActionOrderManager actionOrder)
-    {
-        stateProcess.Add(BoardGameState.Preparation, new OnlinePreparationStateProcess(charManager, networkHandler.photonNetWorkManager.actorNumber));
-        stateProcess.Add(BoardGameState.OrderDice, new OnlineDiceStateProcess(this, networkHandler, false));
-        stateProcess.Add(BoardGameState.DecideOrder, new OnlineDecideOrderStateProcess(this, networkHandler, actionOrder));
-        stateProcess.Add(BoardGameState.SelectAct, new OnlineSelectActStateProcess(this));
-        stateProcess.Add(BoardGameState.MoveDice, new OnlineDiceStateProcess(this, networkHandler, true));
-        stateProcess.Add(BoardGameState.Move, new OnlineMoveStateProcess(charManager, networkHandler.photonNetWorkManager.actorNumber, networkHandler));
     }
     //全ての状態での入力処理を設定する
-    void SetInputProcess(Common.InputSystemManager inputSystem)
+    protected void SetInputProcess(Common.InputSystemManager inputSystem)
     {
         foreach(var keyValue in stateProcess)
         {
@@ -63,4 +43,7 @@ public class StateProcessManager
         inputSystem.DisableActionMap($"{currentState}State", 1);
         inputSystem.EnableActionMap($"{nextState}State", 1);
     }
+
+    //抽象メソッド
+    protected abstract void InitializeStateProcesses(BaseCharManager charManager, ActionOrderManager actionOrder);
 }

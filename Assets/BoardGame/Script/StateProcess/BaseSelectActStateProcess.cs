@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 
 publicÅ@abstract class BaseSelectActStateProcess : Common.Interface.StateProcess
 {
-    BoardGame.GameManager gameManager;
-    protected StateProcessManager stateProcessManager;
+    BoardGame.BaseGameManager gameManager;
+    protected BaseStateProcessManager stateProcessManager;
     protected bool isSelected;
     protected int selectActNumber;
     private class SendDataStruct
@@ -15,7 +15,7 @@ publicÅ@abstract class BaseSelectActStateProcess : Common.Interface.StateProcess
         public string act;
     }
 
-    public BaseSelectActStateProcess(StateProcessManager stateProcessManager)
+    public BaseSelectActStateProcess(BaseStateProcessManager stateProcessManager)
     {
         this.stateProcessManager = stateProcessManager;
     }

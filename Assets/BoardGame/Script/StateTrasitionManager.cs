@@ -7,8 +7,8 @@ using UnityEngine.InputSystem.XR.Haptics;
 public class StateTrasitionManager
 {
     Common.StateMachine stateMachine;
-    StateProcessManager stateProcessManager;
-    public StateTrasitionManager(StateProcessManager processManager, Common.StateMachine stateMachine)
+    BaseStateProcessManager stateProcessManager;
+    public StateTrasitionManager(BaseStateProcessManager processManager, Common.StateMachine stateMachine)
     {
         stateProcessManager = processManager;
         this.stateMachine = stateMachine;

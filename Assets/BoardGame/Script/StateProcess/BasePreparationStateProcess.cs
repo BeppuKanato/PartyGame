@@ -9,11 +9,11 @@ using UnityEngine.InputSystem;
 public abstract class BasePreparationStateProcess : Common.Interface.StateProcess
 {
 
-    protected CharManager charManager;
+    protected BaseCharManager charManager;
     protected UserParams userParams;
     protected int actorNumber;    //ƒ‹[ƒ€“à‚ÅˆêˆÓ‚ÌID
 
-    public BasePreparationStateProcess(CharManager charManager, int actorNumber)
+    public BasePreparationStateProcess(BaseCharManager charManager, int actorNumber)
     {
         Debug.Log("Preparion");
         userParams = UserParams.GetInstance();
